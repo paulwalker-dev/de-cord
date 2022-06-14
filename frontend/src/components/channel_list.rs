@@ -8,26 +8,50 @@ pub struct ChannelListProps {
 #[function_component(ChannelList)]
 pub fn channel_list(props: &ChannelListProps) -> Html {
   html! {
-    <nav
+    <div
       class={classes!(
         "flex",
         "flex-col",
         "h-screen",
-        "p-2",
         "bg-slate-800"
       )}
     >
       <div
         class={classes!(
-          "w-40",
-          "bg-slate-700",
-          "px-2",
-          "py-1",
-          "rounded-xl"
+          "flex",
+          "items-center",
+          "h-12",
+          "p-2",
+          "border-slate-600",
+          "border-b-2"
         )}
       >
-        { &props.server }
+        <p
+          class={classes!(
+            "font-bold"
+          )}
+        >
+          { &props.server }
+        </p>
       </div>
-    </nav>
+      <nav
+        class={classes!(
+          "p-2"
+        )}
+      >
+        <button
+          class={classes!(
+            "hover:bg-slate-700",
+            "w-40",
+            "px-2",
+            "py-1",
+            "rounded-xl",
+            "text-left"
+          )}
+        >
+          { "Dummy Data" }
+        </button>
+      </nav>
+    </div>
   }
 }
