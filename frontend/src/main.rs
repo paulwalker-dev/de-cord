@@ -6,17 +6,29 @@ pub mod lib;
 mod pages;
 
 use components::sidebar::Sidebar;
-use pages::index::Index;
+use pages::home::Home;
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
   #[at("/")]
   Home,
+  #[at("/dms/:id")]
+  DirectChannel { id: String },
+  #[at("/channels/:server/:id")]
+  Channel { server: String, id: String },
 }
 
 fn switch(routes: &Route) -> Html {
   match routes {
-    Route::Home => html! { <Index /> },
+    Route::Home => html! {
+      <Home channel={ "@friends".to_string() } />
+    },
+    Route::DirectChannel { id } => html! {
+      <Home channel={id.clone()} />
+    },
+    Route::Channel { server: _, id: _ } => html! {
+      <div>{ "Not implemented" }</div>
+    },
   }
 }
 
@@ -27,6 +39,7 @@ fn app() -> Html {
       class={classes!(
         "flex",
         "flex-row",
+        "w-screen",
         "bg-slate-900",
         "text-blue-100"
       )}
