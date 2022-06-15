@@ -9,7 +9,7 @@ use components::sidebar::Sidebar;
 use pages::home::Home;
 
 #[derive(Clone, Routable, PartialEq)]
-enum Route {
+pub enum Route {
   #[at("/")]
   Home,
   #[at("/dms/:id")]
@@ -35,15 +35,13 @@ fn switch(routes: &Route) -> Html {
 #[function_component(App)]
 fn app() -> Html {
   html! {
-    <div
-      class={classes!(
-        "flex",
-        "flex-row",
-        "w-screen",
-        "bg-slate-900",
-        "text-blue-100"
-      )}
-    >
+    <div class={classes!(
+      "flex",
+      "flex-row",
+      "w-screen",
+      "bg-slate-900",
+      "text-blue-100"
+    )}>
       <Sidebar />
       <BrowserRouter>
         <Switch<Route> render={Switch::render(switch)} />
