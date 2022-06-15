@@ -15,7 +15,7 @@ pub fn home(props: &HomeProps) -> Html {
       "flex-row"
     )}>
       <ChannelList server={ "@me" } />
-      <Chat id={ props.channel.clone() } />
+      <Chat server={ "@me" } channel={ props.channel.clone() } />
     </div>
   }
 }

@@ -10,3 +10,5 @@ path = "src/main.rs"
 [dependencies]
 actix-web = "4"
 common = { path = "../common" }
+serde = "1"
+serde_json = "1"

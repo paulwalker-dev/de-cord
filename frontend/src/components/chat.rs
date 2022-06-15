@@ -1,23 +1,37 @@
-use crate::components::friend_list::FriendList;
-use common::{Message, User};
+use crate::{components::friend_list::FriendList, lib::api::get};
+use common::{Channel, Message, UserProfile};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct ChatProps {
-  pub id: String,
+  pub server: String,
+  pub channel: String,
 }
 
 #[function_component(Chat)]
 pub fn chat(props: &ChatProps) -> Html {
-  let messages = use_state(|| {
-    vec![Message {
-      user: User {
-        id: "nanoid!()".to_string(),
-        username: "Test User".to_string(),
+  let channel_default = Channel {
+    id: 0,
+    user_ids: vec![],
+    messages: vec![],
+  };
+  let channel = use_state(|| channel_default.clone());
+  {
+    let channel = channel.clone();
+    let channel_name = props.channel.clone();
+    use_effect_with_deps(
+      move |_| {
+        wasm_bindgen_futures::spawn_local(async move {
+          let responce: Channel = get(&format!("dms/{}", channel_name))
+            .await
+            .unwrap_or(channel_default);
+          channel.set(responce);
+        });
+        || ()
       },
-      contents: "Hello, World!".to_string(),
-    }]
-  });
+      vec![props.server.clone(), props.channel.clone()],
+    )
+  }
 
   html! {
     <div class={classes!(
@@ -36,11 +50,11 @@ pub fn chat(props: &ChatProps) -> Html {
         <p class={classes!(
           "font-bold"
         )}>
-          { &props.id }
+          { &props.channel }
         </p>
       </div>
       {
-        if props.id != "@friends" {
+        if props.channel != "@friends" {
           html! {
             <main class={classes!(
               "flex-1",
@@ -48,7 +62,7 @@ pub fn chat(props: &ChatProps) -> Html {
               "flex-col-reverse",
               "p-3"
             )}>
-              { for messages.iter().map(|message| {
+              { for channel.messages.iter().map(|message| {
                 html! {
                   <ChatMessage message={message.clone()} />
                 }
@@ -72,12 +86,34 @@ struct ChatMessageProps {
 
 #[function_component(ChatMessage)]
 fn chat_message(props: &ChatMessageProps) -> Html {
+  let user_default = UserProfile {
+    id: 0,
+    username: "".to_string(),
+  };
+  let user = use_state(|| user_default.clone());
+  {
+    let user = user.clone();
+    let user_id = props.message.clone().user_id;
+    use_effect_with_deps(
+      move |_| {
+        wasm_bindgen_futures::spawn_local(async move {
+          let responce: UserProfile = get(&format!("profile/{}", user_id))
+            .await
+            .unwrap_or(user_default);
+          user.set(responce);
+        });
+        || ()
+      },
+      (),
+    )
+  }
+
   html! {
     <div>
       <p class={classes!(
         "font-bold"
       )}>
-        { &props.message.user.username }
+        { &user.username }
       </p>
       <p>
         { &props.message.contents }

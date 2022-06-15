@@ -36,8 +36,8 @@ pub fn channel_list(props: &ChannelListProps) -> Html {
       )}>
         <ChannelLink
           channel_server={ props.server.clone() }
-          channel={ "Hello".to_string() }
-          display_name={ "Hello".to_string() }
+          channel={ "2".to_string() }
+          display_name={ "2".to_string() }
         />
       </nav>
     </div>

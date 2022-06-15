@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-common = { path = "../common" }
+common = { path = "../common", features = ["js"] }
 reqwasm = "0.5"
 serde = { version = "1.0", features = ["derive"] }
 wasm-bindgen-futures = "0.4"
