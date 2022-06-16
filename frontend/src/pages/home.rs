@@ -1,4 +1,4 @@
-use crate::components::{channel_list::ChannelList, chat::Chat};
+use crate::components::{channels_sidebar::ChannelsSidebar, chat::Chat};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
@@ -14,7 +14,7 @@ pub fn home(props: &HomeProps) -> Html {
       "flex",
       "flex-row"
     )}>
-      <ChannelList server={ "@me" } />
+      <ChannelsSidebar server={ "@me" } />
       <Chat channel={ props.channel.clone() } />
     </div>
   }

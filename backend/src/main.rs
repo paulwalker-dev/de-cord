@@ -63,6 +63,11 @@ async fn get_profile(data: web::Data<AppState>, id: web::Path<i32>) -> HttpRespo
   }
 }
 
+#[get("/dms")]
+async fn get_dms(data: web::Data<AppState>) -> HttpResponse {
+  HttpResponse::Ok().json(&data.data.lock().unwrap().users[0].dms)
+}
+
 #[get("/dms/{id}")]
 async fn get_dm(data: web::Data<AppState>, id: web::Path<i32>) -> HttpResponse {
   match data.data.lock().unwrap().users[0]
@@ -86,6 +91,7 @@ async fn main() -> std::io::Result<()> {
     App::new()
       .app_data(data.clone())
       .service(get_profile)
+      .service(get_dms)
       .service(get_dm)
   })
   .bind(("0.0.0.0", 3000))?

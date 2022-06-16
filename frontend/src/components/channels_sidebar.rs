@@ -1,4 +1,5 @@
-use crate::Route;
+use crate::{lib::api::use_api, Route};
+use common::ChannelList;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -7,8 +8,13 @@ pub struct ChannelListProps {
   pub server: String,
 }
 
-#[function_component(ChannelList)]
-pub fn channel_list(props: &ChannelListProps) -> Html {
+#[function_component(ChannelsSidebar)]
+pub fn channels_sidebar(props: &ChannelListProps) -> Html {
+  let channels: ChannelList = use_api("dms".to_string(), ()).unwrap_or(ChannelList {
+    server: "".to_string(),
+    channels: vec![],
+  });
+
   html! {
     <div class={classes!(
       "flex",
@@ -34,11 +40,15 @@ pub fn channel_list(props: &ChannelListProps) -> Html {
       <nav class={classes!(
         "p-2"
       )}>
-        <ChannelLink
-          channel_server={ props.server.clone() }
-          channel={ "2".to_string() }
-          display_name={ "2".to_string() }
-        />
+        { for channels.channels.iter().map(|channel| {
+          html! {
+            <ChannelLink
+              channel_server={ props.server.clone() }
+              channel={ format!("{}", channel.id) }
+              display_name={ format!("{}", channel.id) }
+            />
+          }
+        }) }
       </nav>
     </div>
   }
