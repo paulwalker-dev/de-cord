@@ -7,7 +7,7 @@ A Discord clone
 - Have `rustup` installed
 - Have the `wasm32-unknown-unknown` Rust toolchain installed
 - Have `trunk` and `wasm-bindgen-cli` installed via Cargo
-- Optionally install `tauri-cli` version `^1.0.0-rc` via Cargo
+- Optionally install `tauri-cli` version `^1.0.0` via Cargo
 - Optionally have `docker` and `docker-compose` installed
 
 ## Running the project
