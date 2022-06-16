@@ -23,11 +23,19 @@ jobs:
         working-directory: ./backend
         run: cargo build --release
 
-      - name: Upload artifacts
+      - name: Upload artifacts (Unix-like only)
         uses: actions/upload-artifact@v3
+        if: matrix.platform != 'windows-latest'
         with:
           name: server-${{ matrix.platform }}
           path: target/release/app
+
+      - name: Upload artifacts (Windows only)
+        uses: actions/upload-artifact@v3
+        if: matrix.platform == 'windows-latest'
+        with:
+          name: server-${{ matrix.platform }}
+          path: target/release/app.exe
 
   build-app:
     strategy:
