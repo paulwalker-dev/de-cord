@@ -1,37 +1,23 @@
-use crate::{components::friend_list::FriendList, lib::api::get};
+use crate::{components::friend_list::FriendList, lib::api::use_api};
 use common::{Channel, Message, UserProfile};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct ChatProps {
-  pub server: String,
   pub channel: String,
 }
 
 #[function_component(Chat)]
 pub fn chat(props: &ChatProps) -> Html {
-  let channel_default = Channel {
+  let channel: Channel = use_api(
+    format!("dms/{}", &props.channel),
+    vec![props.channel.clone()],
+  )
+  .unwrap_or(Channel {
     id: 0,
     user_ids: vec![],
     messages: vec![],
-  };
-  let channel = use_state(|| channel_default.clone());
-  {
-    let channel = channel.clone();
-    let channel_name = props.channel.clone();
-    use_effect_with_deps(
-      move |_| {
-        wasm_bindgen_futures::spawn_local(async move {
-          let responce: Channel = get(&format!("dms/{}", channel_name))
-            .await
-            .unwrap_or(channel_default);
-          channel.set(responce);
-        });
-        || ()
-      },
-      vec![props.server.clone(), props.channel.clone()],
-    )
-  }
+  });
 
   html! {
     <div class={classes!(
@@ -86,27 +72,14 @@ struct ChatMessageProps {
 
 #[function_component(ChatMessage)]
 fn chat_message(props: &ChatMessageProps) -> Html {
-  let user_default = UserProfile {
+  let user: UserProfile = use_api(
+    format!("profile/{}", props.message.user_id),
+    vec![props.message.clone()],
+  )
+  .unwrap_or(UserProfile {
     id: 0,
     username: "".to_string(),
-  };
-  let user = use_state(|| user_default.clone());
-  {
-    let user = user.clone();
-    let user_id = props.message.clone().user_id;
-    use_effect_with_deps(
-      move |_| {
-        wasm_bindgen_futures::spawn_local(async move {
-          let responce: UserProfile = get(&format!("profile/{}", user_id))
-            .await
-            .unwrap_or(user_default);
-          user.set(responce);
-        });
-        || ()
-      },
-      (),
-    )
-  }
+  });
 
   html! {
     <div>

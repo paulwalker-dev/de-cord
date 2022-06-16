@@ -1,4 +1,4 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer};
+use actix_web::{get, main, web, App, HttpResponse, HttpServer};
 use common::*;
 use std::sync::Mutex;
 
@@ -48,21 +48,6 @@ struct AppState {
   data: Mutex<RootData>,
 }
 
-#[get("/user/{id}")]
-async fn get_user(data: web::Data<AppState>, id: web::Path<i32>) -> HttpResponse {
-  match data
-    .data
-    .lock()
-    .unwrap()
-    .users
-    .iter()
-    .find(|user| user.id == *id)
-  {
-    Some(user) => HttpResponse::Ok().json(user),
-    None => HttpResponse::NotFound().finish(),
-  }
-}
-
 #[get("/profile/{id}")]
 async fn get_profile(data: web::Data<AppState>, id: web::Path<i32>) -> HttpResponse {
   match data
@@ -91,7 +76,7 @@ async fn get_dm(data: web::Data<AppState>, id: web::Path<i32>) -> HttpResponse {
   }
 }
 
-#[actix_web::main] // or #[tokio::main]
+#[main]
 async fn main() -> std::io::Result<()> {
   let data = web::Data::new(AppState {
     data: Mutex::new(get_fake_root()),
@@ -100,7 +85,6 @@ async fn main() -> std::io::Result<()> {
   HttpServer::new(move || {
     App::new()
       .app_data(data.clone())
-      .service(get_user)
       .service(get_profile)
       .service(get_dm)
   })

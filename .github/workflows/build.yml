@@ -5,7 +5,34 @@ on:
       - master
 
 jobs:
-  build:
+  build-server:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build server
+        uses: actions-rs/cargo@v1
+        working-directory: ./backend
+        with:
+          command: build
+          args: --release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: server-${{ matrix.platform }}
+          path: target/release/app
+
+  build-app:
     strategy:
       fail-fast: false
       matrix:
@@ -48,5 +75,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.platform }}
+          name: app-${{ matrix.platform }}
           path: target/release/bundle/
