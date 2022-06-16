@@ -20,11 +20,8 @@ jobs:
           toolchain: stable
 
       - name: Build server
-        uses: actions-rs/cargo@v1
         working-directory: ./backend
-        with:
-          command: build
-          args: --release
+        run: cargo build --release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
