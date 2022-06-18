@@ -4,10 +4,10 @@ use std::sync::Mutex;
 
 fn get_fake_channel() -> Channel {
   Channel {
-    id: 2,
+    id: 3,
     user_ids: vec![1, 2],
     messages: vec![Message {
-      id: 3,
+      id: 4,
       user_id: 2,
       contents: "Hello, World!".to_string(),
     }],
@@ -63,12 +63,12 @@ async fn get_profile(data: web::Data<AppState>, id: web::Path<i32>) -> HttpRespo
   }
 }
 
-#[get("/dms")]
+#[get("/channel/@me")]
 async fn get_dms(data: web::Data<AppState>) -> HttpResponse {
   HttpResponse::Ok().json(&data.data.lock().unwrap().users[0].dms)
 }
 
-#[get("/dms/{id}")]
+#[get("/channel/@me/{id}")]
 async fn get_dm(data: web::Data<AppState>, id: web::Path<i32>) -> HttpResponse {
   match data.data.lock().unwrap().users[0]
     .dms

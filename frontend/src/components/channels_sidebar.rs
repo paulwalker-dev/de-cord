@@ -10,10 +10,11 @@ pub struct ChannelListProps {
 
 #[function_component(ChannelsSidebar)]
 pub fn channels_sidebar(props: &ChannelListProps) -> Html {
-  let channels: ChannelList = use_api("dms".to_string(), ()).unwrap_or(ChannelList {
-    server: "".to_string(),
-    channels: vec![],
-  });
+  let channels: ChannelList =
+    use_api(format!("channel/{}", &props.server), ()).unwrap_or(ChannelList {
+      server: "".to_string(),
+      channels: vec![],
+    });
 
   html! {
     <div class={classes!(
@@ -65,13 +66,9 @@ struct ChannelLinkProps {
 fn channel_link(props: &ChannelLinkProps) -> Html {
   html! {
     <Link<Route> to={
-      if props.channel_server == "@me" {
-        Route::DirectChannel { id: props.channel.clone() }
-      } else {
-        Route::Channel {
-          server: props.channel_server.clone(),
-          id: props.channel.clone()
-        }
+      Route::Channel {
+        server: props.channel_server.clone(),
+        id: props.channel.clone()
       }
     }>
       <div class={classes!(

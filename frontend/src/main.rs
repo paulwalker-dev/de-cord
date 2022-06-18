@@ -12,8 +12,6 @@ use pages::home::Home;
 pub enum Route {
   #[at("/")]
   Home,
-  #[at("/dms/:id")]
-  DirectChannel { id: String },
   #[at("/channels/:server/:id")]
   Channel { server: String, id: String },
 }
@@ -21,13 +19,10 @@ pub enum Route {
 fn switch(routes: &Route) -> Html {
   match routes {
     Route::Home => html! {
-      <Home channel={ "@friends".to_string() } />
+      <Home server={ "@me".to_string() } channel={ "@friends".to_string() } />
     },
-    Route::DirectChannel { id } => html! {
-      <Home channel={id.clone()} />
-    },
-    Route::Channel { server: _, id: _ } => html! {
-      <div>{ "Not implemented" }</div>
+    Route::Channel { server, id } => html! {
+      <Home server={ server.clone() } channel={ id.clone() } />
     },
   }
 }

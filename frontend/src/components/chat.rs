@@ -1,16 +1,21 @@
-use crate::{components::friend_list::FriendList, lib::api::use_api};
+use crate::{
+  components::friend_list::FriendList,
+  lib::api::{post_api, use_api},
+};
 use common::{Channel, Message, UserProfile};
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
-#[derive(Properties, PartialEq)]
+#[derive(Properties, Clone, PartialEq)]
 pub struct ChatProps {
+  pub server: String,
   pub channel: String,
 }
 
 #[function_component(Chat)]
 pub fn chat(props: &ChatProps) -> Html {
   let channel: Channel = use_api(
-    format!("dms/{}", &props.channel),
+    format!("channel/{}/{}", &props.server, &props.channel),
     vec![props.channel.clone()],
   )
   .unwrap_or(Channel {
@@ -18,6 +23,26 @@ pub fn chat(props: &ChatProps) -> Html {
     user_ids: vec![],
     messages: vec![],
   });
+
+  let message_ref = use_node_ref();
+  let onsubmit = {
+    let message_ref = message_ref.clone();
+    let props = props.clone();
+    move |e: FocusEvent| {
+      e.prevent_default();
+      if let Some(input) = message_ref.cast::<HtmlInputElement>() {
+        post_api(
+          &format!("channel/{}/{}", &props.server, &props.channel),
+          &Message {
+            id: 100,
+            user_id: 0,
+            contents: input.value(),
+          },
+        )
+        .expect("Working server");
+      }
+    }
+  };
 
   html! {
     <div class={classes!(
@@ -42,18 +67,38 @@ pub fn chat(props: &ChatProps) -> Html {
       {
         if props.channel != "@friends" {
           html! {
-            <main class={classes!(
+            <div class={classes!(
               "flex-1",
               "flex",
-              "flex-col-reverse",
+              "flex-col",
               "p-3"
             )}>
-              { for channel.messages.iter().map(|message| {
-                html! {
-                  <ChatMessage message={message.clone()} />
-                }
-              }) }
-            </main>
+              <main class={classes!(
+                "flex-1",
+                "flex",
+                "flex-col-reverse",
+                "p-3"
+              )}>
+                { for channel.messages.iter().map(|message| {
+                  html! {
+                    <ChatMessage message={message.clone()} />
+                  }
+                }) }
+              </main>
+              <form
+                class={classes!(
+                  "flex"
+                )}
+                onsubmit={ onsubmit }
+              >
+                <input
+                  class={classes!(
+                    "flex-1"
+                  )}
+                  ref={ message_ref }
+                />
+              </form>
+            </div>
           }
         } else {
           html! {
